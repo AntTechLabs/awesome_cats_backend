@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mychart.fullname" . }}-frontend
+  labels:
+  {{- include "mychart.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: frontend
+    {{- include "mychart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: frontend
+      {{- include "mychart.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.frontend.frontend.image.repository }}:{{ .Values.frontend.frontend.image.tag
+          | default .Chart.AppVersion }}
+        name: frontend
+        ports:
+        - containerPort: 80
+        resources: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mychart.fullname" . }}-backend
+  labels:
+  {{- include "mychart.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: backend
+    {{- include "mychart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: backend
+      {{- include "mychart.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: PGHOST
+          valueFrom:
+            secretKeyRef:
+              key: host
+              name: {{ include "mychart.fullname" . }}-postgresnz
+        - name: PGUSER
+          valueFrom:
+            secretKeyRef:
+              key: user
+              name: {{ include "mychart.fullname" . }}-postgresnz
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: {{ include "mychart.fullname" . }}-postgresnz
+        - name: PGDATABASE
+          valueFrom:
+            secretKeyRef:
+              key: db
+              name: {{ include "mychart.fullname" . }}-postgresnz
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.backend.backend.image.repository }}:{{ .Values.backend.backend.image.tag
+          | default .Chart.AppVersion }}
+        name: backend
+        ports:
+        - containerPort: 3000
+        resources: {}

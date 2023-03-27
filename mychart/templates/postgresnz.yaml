@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "mychart.fullname" . }}-postgresnz
+  labels:
+  {{- include "mychart.labels" . | nindent 4 }}
+data:
+  db: {{ required "postgresnz.db is required" .Values.postgresnz.db | b64enc | quote
+    }}
+  host: {{ required "postgresnz.host is required" .Values.postgresnz.host | b64enc
+    | quote }}
+  password: {{ required "postgresnz.password is required" .Values.postgresnz.password
+    | b64enc | quote }}
+  user: {{ required "postgresnz.user is required" .Values.postgresnz.user | b64enc
+    | quote }}
+type: Opaque

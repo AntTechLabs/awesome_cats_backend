@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ include "mychart.fullname" . }}-myapp
+  labels:
+    app: myapp
+  {{- include "mychart.labels" . | nindent 4 }}
+spec:
+  containers:
+  - image: us.gcr.io/eternal-bongo-379210/frontendnz:v1
+    name: front
+    ports:
+    - containerPort: 80
+    resources: null
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "mychart.fullname" . }}-myapp
+  labels:
+  {{- include "mychart.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.myapp.type }}
+  selector:
+    app: myapp
+  {{- include "mychart.selectorLabels" . | nindent 4 }}
+  ports:
+	{{- .Values.myapp.ports | toYaml | nindent 2 -}}

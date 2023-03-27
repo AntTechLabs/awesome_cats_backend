@@ -1,0 +1,29 @@
+backend:
+  backend:
+    image:
+      repository: us.gcr.io/eternal-bongo-379210/backendnz
+      tag: v3
+  ports:
+  - port: 3000
+    targetPort: 3000
+  type: ClusterIP
+frontend:
+  frontend:
+    image:
+      repository: us.gcr.io/eternal-bongo-379210/frontendnz
+      tag: v1
+  ports:
+  - port: 8080
+    targetPort: 80
+  type: ClusterIP
+kubernetesClusterDomain: cluster.local
+myapp:
+  ports:
+  - port: 8080
+    targetPort: 80
+  type: LoadBalancer
+postgresnz:
+  db: ""
+  host: ""
+  password: ""
+  user: ""
